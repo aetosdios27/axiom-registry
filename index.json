@@ -1,0 +1,215 @@
+[
+  {
+    "id": "csharp-dotnet",
+    "name": "C# .NET Core Engineering",
+    "ecosystem": "C#",
+    "version": "1.0.0",
+    "cli_target": {
+      "extensions": [
+        "*.cs"
+      ],
+      "agent_format": "cursor"
+    }
+  },
+  {
+    "id": "docker-stage",
+    "name": "Docker Multi-stage Builds",
+    "ecosystem": "Docker",
+    "version": "1.0.0",
+    "cli_target": {
+      "extensions": [
+        "Dockerfile",
+        "docker-compose.yml"
+      ],
+      "agent_format": "cursor"
+    }
+  },
+  {
+    "id": "go-canonical",
+    "name": "Go Canonical Style",
+    "ecosystem": "Go",
+    "version": "1.0.0",
+    "cli_target": {
+      "extensions": [
+        "*.go"
+      ],
+      "agent_format": "cursor"
+    }
+  },
+  {
+    "id": "java-enterprise",
+    "name": "Java Enterprise Standard",
+    "ecosystem": "Java",
+    "version": "1.0.0",
+    "cli_target": {
+      "extensions": [
+        "*.java"
+      ],
+      "agent_format": "cursor"
+    }
+  },
+  {
+    "id": "k8s-manifest",
+    "name": "Kubernetes Manifests",
+    "ecosystem": "Kubernetes",
+    "version": "1.0.0",
+    "cli_target": {
+      "extensions": [
+        "*.yaml",
+        "*.yml"
+      ],
+      "agent_format": "cursor"
+    }
+  },
+  {
+    "id": "mobile-native",
+    "name": "Mobile Native Engineering",
+    "ecosystem": "Mobile (Swift/Kotlin)",
+    "version": "1.0.0",
+    "cli_target": {
+      "extensions": [
+        "*.swift",
+        "*.kt"
+      ],
+      "agent_format": "cursor"
+    }
+  },
+  {
+    "id": "cpp-native",
+    "name": "Modern C++ Native",
+    "ecosystem": "C++",
+    "version": "1.0.0",
+    "cli_target": {
+      "extensions": [
+        "*.cpp",
+        "*.h",
+        "*.hpp",
+        "*.cc"
+      ],
+      "agent_format": "cursor"
+    }
+  },
+  {
+    "id": "mongodb-document",
+    "name": "MongoDB Document Modeling",
+    "ecosystem": "MongoDB",
+    "version": "1.0.0",
+    "cli_target": {
+      "extensions": [
+        "*.ts",
+        "*.js",
+        "*.json"
+      ],
+      "agent_format": "cursor"
+    }
+  },
+  {
+    "id": "nextjs-app",
+    "name": "Next.js App Router",
+    "ecosystem": "Next.js (React)",
+    "version": "1.0.0",
+    "cli_target": {
+      "extensions": [
+        "*.tsx",
+        "*.ts",
+        "*.jsx",
+        "*.js"
+      ],
+      "agent_format": "cursor"
+    }
+  },
+  {
+    "id": "nuxt-composition",
+    "name": "Nuxt Composition API",
+    "ecosystem": "Nuxt (Vue)",
+    "version": "1.0.0",
+    "cli_target": {
+      "extensions": [
+        "*.vue",
+        "*.ts"
+      ],
+      "agent_format": "cursor"
+    }
+  },
+  {
+    "id": "postgres-scale",
+    "name": "PostgreSQL Scale",
+    "ecosystem": "PostgreSQL",
+    "version": "1.0.0",
+    "cli_target": {
+      "extensions": [
+        "*.sql",
+        "*.prisma",
+        "*.db"
+      ],
+      "agent_format": "cursor"
+    }
+  },
+  {
+    "id": "python-ai",
+    "name": "Python AI & Engineering",
+    "ecosystem": "Python",
+    "version": "1.0.0",
+    "cli_target": {
+      "extensions": [
+        "*.py"
+      ],
+      "agent_format": "cursor"
+    }
+  },
+  {
+    "id": "redis-cache",
+    "name": "Redis Caching Patterns",
+    "ecosystem": "Redis",
+    "version": "1.0.0",
+    "cli_target": {
+      "extensions": [
+        "*.ts",
+        "*.go",
+        "*.py"
+      ],
+      "agent_format": "cursor"
+    }
+  },
+  {
+    "id": "rust-systems",
+    "name": "Rust Systems",
+    "ecosystem": "Rust",
+    "version": "1.0.0",
+    "cli_target": {
+      "extensions": [
+        "*.rs"
+      ],
+      "agent_format": "cursor"
+    }
+  },
+  {
+    "id": "tailwind-v4",
+    "name": "Tailwind CSS v4",
+    "ecosystem": "Tailwind",
+    "version": "1.0.0",
+    "cli_target": {
+      "extensions": [
+        "*.tsx",
+        "*.vue",
+        "*.svelte",
+        "*.html",
+        "*.css"
+      ],
+      "agent_format": "cursor"
+    }
+  },
+  {
+    "id": "typescript-strict",
+    "name": "TypeScript Strict",
+    "ecosystem": "TypeScript",
+    "version": "1.0.0",
+    "cli_target": {
+      "extensions": [
+        "*.ts",
+        "*.tsx"
+      ],
+      "agent_format": "cursor"
+    }
+  }
+]
