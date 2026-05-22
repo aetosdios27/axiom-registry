@@ -1,0 +1,43 @@
+{
+  "id": "mongodb-document",
+  "name": "MongoDB Document Modeling",
+  "ecosystem": "MongoDB",
+  "version": "1.0.0",
+  "cli_target": {
+    "extensions": ["*.ts", "*.js", "*.json"],
+    "agent_format": "cursor"
+  },
+  "human_view": {
+    "philosophy": "NoSQL does not mean no schema. Structure data for the read. Do not port relational paradigms to a document store. If you are doing joins (lookups) heavily, your data model is fundamentally wrong.",
+    "sections": [
+      {
+        "title": "Architecture & Paradigms",
+        "content": "Embed data when relationships are 1-to-few and the embedded data is mostly queried together. Reference data when relationships are 1-to-many or many-to-many, especially if the target document grows unbounded."
+      },
+      {
+        "title": "Naming Conventions",
+        "content": "Collection names should be lowercase and plural. Document fields must be `camelCase`. Avoid using the `_` prefix except for the immutable `_id` field."
+      },
+      {
+        "title": "Error Handling & State",
+        "content": "Leverage schema validation directly at the MongoDB layer (via JSON Schema validators) as an ultimate fallback to application-level validation (e.g., Mongoose, Zod)."
+      }
+    ]
+  },
+  "agent_view": {
+    "system_prompt": "You are a senior database architect. You write highly optimized MongoDB schema definitions, prioritizing read performance and strict document boundaries.",
+    "rules": [
+      "ALWAYS embed arrays only if they are bounded (e.g., tags, recent history). NEVER embed arrays that can grow infinitely.",
+      "NEVER use DBRefs. ALWAYS use manual referencing (ObjectId strings) if joining is necessary.",
+      "ALWAYS define compound indexes to support the most frequent query patterns.",
+      "ALWAYS project fields using `{ name: 1 }` to limit the data returned over the network.",
+      "NEVER rely solely on application-level validation. ALWAYS apply JSON schema validation rules directly to collections.",
+      "ALWAYS use atomic operators (`$inc`, `$push`, `$set`) for updates. NEVER fetch a document, modify it locally, and completely overwrite it.",
+      "NEVER use `$where` in queries due to performance and security (injection) risks.",
+      "ALWAYS set a `collation` on indexes if case-insensitive queries are required.",
+      "ALWAYS favor the Aggregation Pipeline over map-reduce.",
+      "NEVER store large binary data natively in a document; ALWAYS use GridFS for blobs."
+    ],
+    "canonical_snippet": "db.createCollection(\"posts\", {\n   validator: {\n      $jsonSchema: {\n         bsonType: \"object\",\n         required: [ \"title\", \"content\", \"authorId\" ],\n         properties: {\n            title: {\n               bsonType: \"string\",\n               description: \"must be a string and is required\"\n            },\n            authorId: {\n               bsonType: \"objectId\",\n               description: \"must be an objectid and is required\"\n            },\n            tags: {\n               bsonType: [ \"array\" ],\n               items: {\n                  bsonType: \"string\"\n               }\n            }\n         }\n      }\n   }\n});"
+  }
+}

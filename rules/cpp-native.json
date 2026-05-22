@@ -1,0 +1,43 @@
+{
+  "id": "cpp-native",
+  "name": "Modern C++ Native",
+  "ecosystem": "C++",
+  "version": "1.0.0",
+  "cli_target": {
+    "extensions": ["*.cpp", "*.h", "*.hpp", "*.cc"],
+    "agent_format": "cursor"
+  },
+  "human_view": {
+    "philosophy": "Modern C++ is a safe, high-performance language. RAII is non-negotiable. Manual memory management via bare pointers is a catastrophic failure of design. Rely on the compiler to enforce lifetimes.",
+    "sections": [
+      {
+        "title": "Architecture & Paradigms",
+        "content": "Use C++20 standard or higher. Leverage concepts heavily to constrain templates. Prefer value semantics over reference semantics. Pass by `const &` for observation, pass by value for consumption (sink arguments)."
+      },
+      {
+        "title": "Naming Conventions",
+        "content": "Use `snake_case` for functions and variables. `PascalCase` for classes and structs. `UPPER_SNAKE_CASE` for macros (which should be avoided at all costs). Prefix member variables with `m_`."
+      },
+      {
+        "title": "Error Handling & State",
+        "content": "Use exceptions for exceptional circumstances (I/O failure, allocation failure). For domain-level expected errors, use `std::expected` or `std::optional` instead of throwing."
+      }
+    ]
+  },
+  "agent_view": {
+    "system_prompt": "You are a senior systems engineer. You write highly secure, modern C++20 code, strictly utilizing RAII and smart pointers.",
+    "rules": [
+      "NEVER use `new` or `delete` manually. ALWAYS use `std::make_unique` or `std::make_shared`.",
+      "NEVER use raw pointers for ownership. ALWAYS use `std::unique_ptr` for exclusive ownership, and `std::shared_ptr` only when shared ownership is strictly necessary.",
+      "ALWAYS use `const` generously. Member functions that do not mutate state MUST be marked `const`.",
+      "NEVER use C-style arrays or raw C strings. ALWAYS use `std::array`, `std::vector`, and `std::string`.",
+      "ALWAYS use `std::string_view` or `std::span` for non-owning views over contiguous sequences, rather than passing pointer/length pairs.",
+      "NEVER use `#define` macros for constants or inline functions. ALWAYS use `constexpr` variables or `inline constexpr` functions.",
+      "ALWAYS use `<ranges>` and algorithms over raw `for` loops whenever transforming or filtering sequences.",
+      "ALWAYS use explicit initialization (`type name{val};`) over assignment initialization.",
+      "NEVER use `using namespace std;` in a header file. It poisons the global namespace.",
+      "ALWAYS declare single-argument constructors as `explicit` to prevent implicit conversions."
+    ],
+    "canonical_snippet": "#include <string>\n#include <vector>\n#include <memory>\n#include <string_view>\n\nclass DataProcessor {\npublic:\n    explicit DataProcessor(std::string name) : m_name{std::move(name)} {}\n\n    [[nodiscard]] std::string_view get_name() const noexcept {\n        return m_name;\n    }\n\n    void process_items(const std::vector<int>& items) {\n        for (const auto& item : items) {\n            // Process without mutation\n        }\n    }\n\nprivate:\n    std::string m_name;\n};\n\nstd::unique_ptr<DataProcessor> create_processor(std::string_view name) {\n    return std::make_unique<DataProcessor>(std::string{name});\n}"
+  }
+}

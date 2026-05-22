@@ -1,0 +1,43 @@
+{
+  "id": "k8s-manifest",
+  "name": "Kubernetes Manifests",
+  "ecosystem": "Kubernetes",
+  "version": "1.0.0",
+  "cli_target": {
+    "extensions": ["*.yaml", "*.yml"],
+    "agent_format": "cursor"
+  },
+  "human_view": {
+    "philosophy": "Infrastructure as code must be declarative, predictable, and resilient. Kubernetes expects your application to fail; design your manifests so the orchestrator can revive it flawlessly.",
+    "sections": [
+      {
+        "title": "Architecture & Paradigms",
+        "content": "Deployments must declare their CPU/Memory boundaries explicitly. Probes are not optional; Kubernetes must know when your pod is alive and when it is ready to serve traffic."
+      },
+      {
+        "title": "Naming Conventions",
+        "content": "Labels must follow standard Kubernetes conventions (e.g., `app.kubernetes.io/name`, `app.kubernetes.io/version`). Name resources consistently with hyphen-separated lowercase strings."
+      },
+      {
+        "title": "Error Handling & State",
+        "content": "Never rely on local pod filesystem state. Treat pods as cattle. Mount persistent volumes only if strictly required by the application topology."
+      }
+    ]
+  },
+  "agent_view": {
+    "system_prompt": "You are a senior site reliability engineer. You write robust, fault-tolerant Kubernetes manifests.",
+    "rules": [
+      "ALWAYS define `resources.requests` and `resources.limits` for CPU and Memory on every container. NEVER leave them unbounded.",
+      "ALWAYS implement both `livenessProbe` and `readinessProbe`. NEVER assume a running process means a healthy application.",
+      "NEVER use the `latest` tag for container images in a Deployment. ALWAYS use immutable tags or SHAs.",
+      "ALWAYS define a PodDisruptionBudget (PDB) for critical Deployments to prevent voluntary evictions from taking down the service.",
+      "ALWAYS set `securityContext.runAsNonRoot: true` and `securityContext.readOnlyRootFilesystem: true` unless strictly impossible.",
+      "NEVER hardcode secrets in manifests. ALWAYS use `Secret` resources and mount them as environment variables or volumes.",
+      "ALWAYS use `app.kubernetes.io` recommended labels for all resources.",
+      "ALWAYS explicitly declare `strategy.type: RollingUpdate` and configure `maxSurge` and `maxUnavailable`.",
+      "NEVER expose databases directly via LoadBalancers. ALWAYS use internal ClusterIP services and strictly controlled NetworkPolicies.",
+      "ALWAYS use `ConfigMap` for configuration decoupling, rather than altering deployment arguments directly."
+    ],
+    "canonical_snippet": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: api-server\n  labels:\n    app.kubernetes.io/name: api-server\n    app.kubernetes.io/version: \"1.2.0\"\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      app.kubernetes.io/name: api-server\n  template:\n    metadata:\n      labels:\n        app.kubernetes.io/name: api-server\n    spec:\n      securityContext:\n        runAsNonRoot: true\n      containers:\n        - name: app\n          image: myregistry.com/api-server:1.2.0\n          resources:\n            requests:\n              cpu: \"100m\"\n              memory: \"128Mi\"\n            limits:\n              cpu: \"500m\"\n              memory: \"512Mi\"\n          livenessProbe:\n            httpGet:\n              path: /healthz\n              port: 8080\n            initialDelaySeconds: 5\n          readinessProbe:\n            httpGet:\n              path: /ready\n              port: 8080"
+  }
+}

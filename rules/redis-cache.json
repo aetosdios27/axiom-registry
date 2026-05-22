@@ -1,0 +1,43 @@
+{
+  "id": "redis-cache",
+  "name": "Redis Caching Patterns",
+  "ecosystem": "Redis",
+  "version": "1.0.0",
+  "cli_target": {
+    "extensions": ["*.ts", "*.go", "*.py"],
+    "agent_format": "cursor"
+  },
+  "human_view": {
+    "philosophy": "Redis is memory, and memory is expensive. It is not an archive. Every key must have a TTL. Design your keyspaces hierarchically and avoid unbounded complexity.",
+    "sections": [
+      {
+        "title": "Architecture & Paradigms",
+        "content": "Leverage native structures like Hashes and Sorted Sets rather than dumping massive serialized JSON strings. Use pipelining for bulk operations to minimize network roundtrips."
+      },
+      {
+        "title": "Naming Conventions",
+        "content": "Keys MUST follow a colon-separated hierarchical convention: `domain:entity:id:attribute` (e.g., `user:1024:session`). Avoid overly long key names to save memory, but do not sacrifice readability."
+      },
+      {
+        "title": "Error Handling & State",
+        "content": "Design applications to withstand Redis downtime (Cache Aside pattern). An unavailable cache should result in a slower database hit, not a fatal crash."
+      }
+    ]
+  },
+  "agent_view": {
+    "system_prompt": "You are a senior infrastructure engineer. You write hyper-optimized Redis integration logic.",
+    "rules": [
+      "ALWAYS set a TTL (`EX` or `PX`) on every key written unless it is part of a persistent counter or deliberate set.",
+      "NEVER use the `KEYS *` command in production. ALWAYS use `SCAN` with a cursor to iterate over keys.",
+      "ALWAYS use Hashes (`HSET`, `HGET`) when storing objects, rather than multiple separate string keys.",
+      "NEVER use Redis as a primary source of truth unless append-only-file (AOF) persistence is strictly configured and accepted as sufficient.",
+      "ALWAYS use `PIPELINE` or `MULTI/EXEC` for sequential commands that do not depend on intermediate results.",
+      "ALWAYS enforce a strict eviction policy (`allkeys-lru` or `volatile-lru`) on the Redis server.",
+      "NEVER serialize huge arrays of objects into a single Redis string. Use Sets or Sorted Sets instead.",
+      "ALWAYS add jitter to your TTLs to avoid cache stampedes (e.g., `ttl + random(1, 60)`).",
+      "ALWAYS handle Redis connection failures gracefully by falling back to the database.",
+      "NEVER store sensitive PII in Redis without encryption."
+    ],
+    "canonical_snippet": "import { createClient } from 'redis';\n\nconst client = createClient();\n\nexport async function getCachedUser(id: string, fallbackDbFetch: () => Promise<any>) {\n  const key = `user:${id}:profile`;\n  try {\n    const cached = await client.get(key);\n    if (cached) return JSON.parse(cached);\n  } catch (err) {\n    console.error('Redis read failed, falling back to DB', err);\n  }\n\n  const data = await fallbackDbFetch();\n  \n  try {\n    // Add 10% jitter to a 1-hour TTL\n    const ttl = 3600 + Math.floor(Math.random() * 360);\n    await client.setEx(key, ttl, JSON.stringify(data));\n  } catch (err) {\n    console.error('Redis write failed', err);\n  }\n\n  return data;\n}"
+  }
+}

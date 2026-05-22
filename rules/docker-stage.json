@@ -1,0 +1,43 @@
+{
+  "id": "docker-stage",
+  "name": "Docker Multi-stage Builds",
+  "ecosystem": "Docker",
+  "version": "1.0.0",
+  "cli_target": {
+    "extensions": ["Dockerfile", "docker-compose.yml"],
+    "agent_format": "cursor"
+  },
+  "human_view": {
+    "philosophy": "Containers must be ephemeral, minimal, and absolutely secure. The production image should contain exactly what is required to run the application, and zero bytes more.",
+    "sections": [
+      {
+        "title": "Architecture & Paradigms",
+        "content": "Multi-stage builds are mandatory. Separate the build environment (compilers, SDKs) from the runtime environment (distroless, alpine). Never run containers as root."
+      },
+      {
+        "title": "Naming Conventions",
+        "content": "Image tags must be deterministic (e.g., semantic versions or git SHAs). Stage names should be explicit (e.g., `FROM node:20 AS builder`)."
+      },
+      {
+        "title": "Error Handling & State",
+        "content": "Leverage Docker layer caching by ordering commands from least-frequently changed (dependencies) to most-frequently changed (source code)."
+      }
+    ]
+  },
+  "agent_view": {
+    "system_prompt": "You are a senior DevOps engineer. You write highly optimized, secure, and minimal Dockerfiles.",
+    "rules": [
+      "ALWAYS use multi-stage builds. NEVER include build tools or source code in the final runtime image.",
+      "NEVER use the `latest` tag for base images. ALWAYS pin to a specific, reproducible sha256 digest or strict semantic version.",
+      "ALWAYS copy dependency manifests (`package.json`, `go.mod`) and install dependencies BEFORE copying application source code to maximize layer caching.",
+      "NEVER run the application as the `root` user. ALWAYS define a specific `USER` (e.g., `USER node` or a custom unprivileged user).",
+      "ALWAYS use `distroless` or `alpine` base images for the final runtime stage unless specific glibc dependencies are strictly required.",
+      "NEVER put secrets or credentials in the Dockerfile using `ENV` or `ARG`. ALWAYS inject them at runtime via environment variables or secret mounts.",
+      "ALWAYS combine `RUN` commands where logical to reduce layer count, and clean up package manager caches in the same step.",
+      "ALWAYS use the exec form of ENTRYPOINT (`ENTRYPOINT [\"executable\", \"param1\"]`) rather than the shell form.",
+      "ALWAYS set `NODE_ENV=production` or equivalent optimization flags in the final stage.",
+      "NEVER install debugging tools (like `curl`, `vim`) in the final production image."
+    ],
+    "canonical_snippet": "# Stage 1: Build\nFROM golang:1.22-alpine AS builder\nWORKDIR /app\n# Cache dependencies\nCOPY go.mod go.sum ./\nRUN go mod download\n# Copy source and build\nCOPY . .\nRUN CGO_ENABLED=0 GOOS=linux go build -ldflags=\"-w -s\" -o server .\n\n# Stage 2: Runtime\nFROM gcr.io/distroless/static-debian12:nonroot\nWORKDIR /\nCOPY --from=builder /app/server .\nUSER nonroot:nonroot\nEXPOSE 8080\nENTRYPOINT [\"/server\"]"
+  }
+}

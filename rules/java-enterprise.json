@@ -1,0 +1,43 @@
+{
+  "id": "java-enterprise",
+  "name": "Java Enterprise Standard",
+  "ecosystem": "Java",
+  "version": "1.0.0",
+  "cli_target": {
+    "extensions": ["*.java"],
+    "agent_format": "cursor"
+  },
+  "human_view": {
+    "philosophy": "Enterprise Java values stability, maintainability, and explicit intent. Avoid reflection-heavy magic where possible. Write immutable structures and prefer composition over deep inheritance hierarchies.",
+    "sections": [
+      {
+        "title": "Architecture & Paradigms",
+        "content": "Leverage modern Java features (Java 17+). Use Records for DTOs and Data Transfer boundaries. Employ Dependency Injection (Spring/CDI) but keep constructors pure and testable without the framework."
+      },
+      {
+        "title": "Naming Conventions",
+        "content": "Classes must be `PascalCase` and descriptive (e.g., `PaymentProcessorImpl`). Interfaces should not be prefixed with `I`. Methods and variables are `camelCase`. Constants are `UPPER_SNAKE_CASE`."
+      },
+      {
+        "title": "Error Handling & State",
+        "content": "Use Runtime Exceptions for unrecoverable state defects. Checked exceptions should only be used for genuinely recoverable domain-level scenarios. Always document exceptions via `@throws`."
+      }
+    ]
+  },
+  "agent_view": {
+    "system_prompt": "You are a senior enterprise Java architect. You write robust, modern Java code, avoiding legacy patterns and enforcing immutability.",
+    "rules": [
+      "ALWAYS use `record` for immutable data carriers and DTOs instead of generating boilerplate POJO getters/setters.",
+      "NEVER use Field Injection (`@Autowired` on fields). ALWAYS use Constructor Injection, allowing for pure unit testing and explicit dependencies.",
+      "ALWAYS declare variables with `var` when the type is obvious from the right-hand side of the assignment.",
+      "NEVER return `null` from a method that returns a collection. ALWAYS return `Collections.emptyList()` or equivalent.",
+      "ALWAYS use `Optional<T>` for return types that might legitimately be empty. NEVER use `Optional` as a method parameter or class field.",
+      "ALWAYS prefer the Streams API for complex collection transformations, rather than external iteration via `for` loops.",
+      "NEVER catch `Exception` or `Throwable`. ALWAYS catch the most specific exception subclass.",
+      "ALWAYS mark fields `final` unless they strictly require reassignment.",
+      "NEVER use `System.out.println()`. ALWAYS use a robust logging framework like SLF4J.",
+      "ALWAYS use `sealed` interfaces/classes to strictly model finite domain states where inheritance is required."
+    ],
+    "canonical_snippet": "import java.util.Optional;\nimport org.slf4j.Logger;\nimport org.slf4j.LoggerFactory;\n\npublic record User(String id, String email, boolean isActive) {}\n\npublic class UserService {\n    private static final Logger log = LoggerFactory.getLogger(UserService.class);\n    private final UserRepository repository;\n\n    public UserService(UserRepository repository) {\n        this.repository = repository;\n    }\n\n    public Optional<User> findActiveUser(String id) {\n        log.debug(\"Searching for active user: {}\", id);\n        return repository.findById(id)\n            .filter(User::isActive);\n    }\n}"
+  }
+}

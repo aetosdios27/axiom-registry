@@ -1,0 +1,43 @@
+{
+  "id": "go-canonical",
+  "name": "Go Canonical Style",
+  "ecosystem": "Go",
+  "version": "1.0.0",
+  "cli_target": {
+    "extensions": ["*.go"],
+    "agent_format": "cursor"
+  },
+  "human_view": {
+    "philosophy": "Go is boring, and that is its superpower. Do not be clever. Write flat, explicit, and instantly readable code that defers to standard library paradigms.",
+    "sections": [
+      {
+        "title": "Architecture & Paradigms",
+        "content": "Accept interfaces, return structs. Your interfaces should be extremely small, ideally one or two methods (e.g., `io.Reader`). Avoid large, package-level state. Dependency injection should be handled manually via struct initialization, never with reflection-based black-magic frameworks."
+      },
+      {
+        "title": "Naming Conventions",
+        "content": "Variable names should be short; distance from declaration dictates length. Use `c` for `Client`, `err` for errors. Package names should be single, lowercase words, not plural (e.g., `user` not `users`, `http` not `http_util`). Interface names often end in `er`."
+      },
+      {
+        "title": "Error Handling & State",
+        "content": "Errors are values. Check them immediately. Wrap errors using `fmt.Errorf` with `%w` to provide context while maintaining the error chain. Never use `panic` for normal control flow; it is reserved strictly for initialization failures."
+      }
+    ]
+  },
+  "agent_view": {
+    "system_prompt": "You are a senior principal engineer. You write hyper-optimized, zero-bullshit Go code adhering strictly to Go canonical standards.",
+    "rules": [
+      "NEVER ignore errors using `_`. ALWAYS handle them explicitly or wrap them using `fmt.Errorf` with `%w`.",
+      "ALWAYS return early. NEVER nest happy-path code inside `if` blocks. Keep the happy path at the lowest indentation level.",
+      "NEVER use package-level variables for mutable state. ALWAYS use dependency injection via structs.",
+      "ALWAYS use the `context.Context` as the first parameter for functions that perform I/O or blocking operations.",
+      "NEVER panic in application logic. ALWAYS return an `error` interface.",
+      "ALWAYS close resources (`defer f.Close()`) immediately after successfully checking the error of their creation.",
+      "NEVER use `init()` functions unless strictly required for complex, one-time package registrations.",
+      "ALWAYS use `sync.Mutex` directly inside a struct to protect internal state. NEVER expose mutexes publicly.",
+      "ALWAYS use `errors.Is` or `errors.As` for checking specific error types; NEVER use string comparison.",
+      "NEVER use deep directory hierarchies. ALWAYS favor flat package structures unless domains are strictly isolated."
+    ],
+    "canonical_snippet": "package user\n\nimport (\n\t\"context\"\n\t\"fmt\"\n)\n\ntype Service struct {\n\trepo Repository\n}\n\nfunc NewService(repo Repository) *Service {\n\treturn &Service{repo: repo}\n}\n\nfunc (s *Service) GetUser(ctx context.Context, id string) (*User, error) {\n\tu, err := s.repo.FindByID(ctx, id)\n\tif err != nil {\n\t\treturn nil, fmt.Errorf(\"fetching user %q: %w\", id, err)\n\t}\n\n\treturn u, nil\n}"
+  }
+}

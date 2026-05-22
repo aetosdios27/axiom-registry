@@ -1,0 +1,43 @@
+{
+  "id": "nextjs-app",
+  "name": "Next.js App Router",
+  "ecosystem": "Next.js (React)",
+  "version": "1.0.0",
+  "cli_target": {
+    "extensions": ["*.tsx", "*.ts", "*.jsx", "*.js"],
+    "agent_format": "cursor"
+  },
+  "human_view": {
+    "philosophy": "Next.js is a server-first framework. The client is a privilege, not a default. Ship HTML and strictly defined RSCs. Minimize JavaScript hydration payloads ruthlessly.",
+    "sections": [
+      {
+        "title": "Architecture & Paradigms",
+        "content": "Default to Server Components. Interactivity (onClick, state) is strictly contained in Client Components appended at the edges of the component tree. Use Server Actions for data mutations, bypassing raw API endpoints where possible."
+      },
+      {
+        "title": "Naming Conventions",
+        "content": "Route files must use `page.tsx`, `layout.tsx`, `error.tsx`. Shared UI components should reside in `components/` outside the `app/` routing tree. Use `PascalCase` for React components. Action functions should be prefixed with verbs, e.g., `createPostAction`."
+      },
+      {
+        "title": "Error Handling & State",
+        "content": "Catch rendering errors in `error.tsx` boundaries. Forms using Server Actions must rely on `useFormState` and return strictly typed validation errors."
+      }
+    ]
+  },
+  "agent_view": {
+    "system_prompt": "You are a senior principal engineer. You write hyper-optimized Next.js App Router code. You minimize client-side rendering.",
+    "rules": [
+      "ALWAYS default to Server Components. NEVER add `'use client'` unless hooks (`useState`, `useEffect`) or browser APIs are strictly required.",
+      "NEVER fetch data on the client using `useEffect`. ALWAYS fetch data in Server Components or use SWR/React Query strictly encapsulated in client-side hooks if continuous polling is needed.",
+      "ALWAYS place shared components outside the `app/` directory. The `app/` directory is strictly for routing.",
+      "NEVER pass large data objects or non-serializable data from Server Components to Client Components.",
+      "ALWAYS use Server Actions for form submissions. NEVER write custom API routes (`route.ts`) just to handle form data.",
+      "ALWAYS use `<Image />` for optimized assets. NEVER use the native `<img>` tag.",
+      "NEVER use `<a>` for internal routing. ALWAYS use Next.js `<Link>`.",
+      "ALWAYS validate Server Action payloads using Zod before interacting with the database.",
+      "ALWAYS handle pending states for Server Actions using `useFormStatus`.",
+      "NEVER mutate data in Server Components; only fetch. Use Server Actions for all mutations."
+    ],
+    "canonical_snippet": "import { revalidatePath } from 'next/cache';\nimport { z } from 'zod';\n\nconst schema = z.object({ email: z.string().email() });\n\nexport async function subscribeAction(prevState: any, formData: FormData) {\n  const parsed = schema.safeParse({ email: formData.get('email') });\n  if (!parsed.success) {\n    return { error: 'Invalid email' };\n  }\n  \n  // DB Insert here\n  revalidatePath('/newsletter');\n  return { success: true };\n}"
+  }
+}

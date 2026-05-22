@@ -1,0 +1,43 @@
+{
+  "id": "tailwind-v4",
+  "name": "Tailwind CSS v4",
+  "ecosystem": "Tailwind",
+  "version": "1.0.0",
+  "cli_target": {
+    "extensions": ["*.tsx", "*.vue", "*.svelte", "*.html", "*.css"],
+    "agent_format": "cursor"
+  },
+  "human_view": {
+    "philosophy": "Utility-first is utility-only. Do not write custom CSS unless you are fighting browser bugs or creating highly specialized animations. Trust the design system and compose primitives.",
+    "sections": [
+      {
+        "title": "Architecture & Paradigms",
+        "content": "Tailwind v4 removes the heavy config in favor of CSS variables. Leverage `@theme` strictly. Do not use `@apply` to recreate standard BEM classes; it defeats the purpose of atomic styling."
+      },
+      {
+        "title": "Naming Conventions",
+        "content": "Order classes predictably: layout, positioning, box model, typography, visual, interactive. Use automated sorters like `prettier-plugin-tailwindcss`."
+      },
+      {
+        "title": "Error Handling & State",
+        "content": "Leverage data-attributes (`data-[state=open]:`) and group-modifiers for complex interactive states rather than conditionally rendering entirely different component trees."
+      }
+    ]
+  },
+  "agent_view": {
+    "system_prompt": "You are a senior frontend architect. You write pure, semantic Tailwind v4 utility combinations.",
+    "rules": [
+      "NEVER write custom CSS. ALWAYS use Tailwind utility classes.",
+      "NEVER use `@apply` to create traditional semantic classes (e.g., `.btn`). ALWAYS compose utilities directly in the markup or React/Vue component.",
+      "ALWAYS use CSS variables inside `@theme` for design tokens in Tailwind v4. NEVER use hardcoded arbitary values like `bg-[#123456]` unless it is a strict one-off.",
+      "ALWAYS use logical properties (`ms-` instead of `ml-`, `pe-` instead of `pr-`) to support RTL layouts natively.",
+      "ALWAYS group interactive states logically. Prefer `data-[state=*]` modifiers over complex component state tracking for styles.",
+      "NEVER use `!important` classes (`!hidden`) unless strictly overriding third-party injected styles.",
+      "ALWAYS manage responsive design desktop-first or mobile-first consistently. Stick to `sm:`, `md:`, `lg:` up-scaling.",
+      "ALWAYS use Tailwind's native grid utilities (`grid-cols-*`) over flexbox for 2D layouts.",
+      "ALWAYS use `clsx` or `tailwind-merge` when combining dynamic class names in JavaScript frameworks.",
+      "ALWAYS ensure components have interactive pseudo-classes defined (`hover:`, `focus-visible:`, `active:`)."
+    ],
+    "canonical_snippet": "import { clsx, type ClassValue } from 'clsx';\nimport { twMerge } from 'tailwind-merge';\n\nexport function cn(...inputs: ClassValue[]) {\n  return twMerge(clsx(inputs));\n}\n\n// Usage in a component\nexport function Button({ variant, className, ...props }) {\n  return (\n    <button\n      className={cn(\n        \"inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors\",\n        \"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50\",\n        variant === 'default' ? \"bg-primary text-primary-foreground hover:bg-primary/90\" : \"bg-secondary text-secondary-foreground\",\n        className\n      )}\n      {...props}\n    />\n  );\n}"
+  }
+}

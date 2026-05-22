@@ -1,0 +1,43 @@
+{
+  "id": "typescript-strict",
+  "name": "TypeScript Strict",
+  "ecosystem": "TypeScript",
+  "version": "1.0.0",
+  "cli_target": {
+    "extensions": ["*.ts", "*.tsx"],
+    "agent_format": "cursor"
+  },
+  "human_view": {
+    "philosophy": "TypeScript is not a playground for 'any'. It is a strict contract language. If the compiler cannot infer it, you must define it with absolute precision.",
+    "sections": [
+      {
+        "title": "Architecture & Paradigms",
+        "content": "Prefer immutability and structural typing. Leverage Discriminated Unions for modeling complex state flows instead of throwing isolated exceptions. Ensure that generic type arguments are constrained heavily using `extends` to prevent loose implementations."
+      },
+      {
+        "title": "Naming Conventions",
+        "content": "Interfaces must NOT be prefixed with `I`. Types must be PascalCase. Type generics should use descriptive names (e.g., `TRequestPayload`) rather than single letters (`T`, `U`) unless the scope is completely trivial."
+      },
+      {
+        "title": "Error Handling & State",
+        "content": "Return explicit `Result` objects or unions (e.g., `{ success: true; data: T } | { success: false; error: string }`) instead of relying on `try/catch` flows, unless boundary catching is enforced. Unhandled rejections must be actively logged and fail the process."
+      }
+    ]
+  },
+  "agent_view": {
+    "system_prompt": "You are a senior principal engineer. You write hyper-optimized, zero-bullshit TypeScript code enforcing strict compiler checks.",
+    "rules": [
+      "NEVER use `any`. ALWAYS use `unknown` if the type is truly dynamic, and narrow it with type guards.",
+      "ALWAYS enable `strict` mode in tsconfig. NEVER bypass compiler checks using `@ts-ignore`; use `@ts-expect-error` with a detailed explanation.",
+      "ALWAYS use `interface` for object shapes; NEVER use `type` unless defining a union or utility type.",
+      "NEVER use enums; ALWAYS use string literal unions or const objects.",
+      "ALWAYS strongly type the return values of exported functions. NEVER rely solely on return type inference for public APIs.",
+      "NEVER mutate arrays directly. ALWAYS use non-mutating array methods like `map`, `filter`, or spread syntax.",
+      "ALWAYS use optional chaining (`?.`) and nullish coalescing (`??`) instead of verbose `&&` or ternary checks.",
+      "NEVER use default exports. ALWAYS use named exports to enforce consistent naming across the codebase.",
+      "ALWAYS use `ReadonlyArray<T>` or `readonly T[]` for array arguments that should not be mutated.",
+      "NEVER assert types using `as` unless interacting with a third-party untyped library."
+    ],
+    "canonical_snippet": "export type UserRole = 'admin' | 'user' | 'guest';\n\nexport interface User {\n  readonly id: string;\n  readonly email: string;\n  readonly role: UserRole;\n}\n\nexport const isUserAdmin = (user: User): boolean => {\n  return user.role === 'admin';\n};\n\nexport const fetchUser = async (id: string): Promise<{ success: true; data: User } | { success: false; error: string }> => {\n  // Implementation\n  return { success: false, error: 'Not implemented' };\n};"
+  }
+}

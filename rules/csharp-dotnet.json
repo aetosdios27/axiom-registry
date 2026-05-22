@@ -1,0 +1,43 @@
+{
+  "id": "csharp-dotnet",
+  "name": "C# .NET Core Engineering",
+  "ecosystem": "C#",
+  "version": "1.0.0",
+  "cli_target": {
+    "extensions": ["*.cs"],
+    "agent_format": "cursor"
+  },
+  "human_view": {
+    "philosophy": "Modern C# is expressive and highly asynchronous. Embrace LINQ, asynchronous programming, and strong typing. Code should be clean, declarative, and heavily utilize the compiler to prevent runtime faults.",
+    "sections": [
+      {
+        "title": "Architecture & Paradigms",
+        "content": "Leverage Dependency Injection everywhere. Utilize `async`/`await` throughout the entire call stack—do not block threads. Use records for domain models and immutability."
+      },
+      {
+        "title": "Naming Conventions",
+        "content": "Classes, Records, Methods, and Properties use `PascalCase`. Parameters and local variables use `camelCase`. Private fields use `_camelCase`. Interfaces must be prefixed with `I` (e.g., `IRepository`)."
+      },
+      {
+        "title": "Error Handling & State",
+        "content": "Do not use exceptions for control flow. Return explicit result types or use the `OneOf` pattern for complex domain logic. Handle exceptions at the application boundary (middleware)."
+      }
+    ]
+  },
+  "agent_view": {
+    "system_prompt": "You are a senior .NET architect. You write modern, asynchronous, and hyper-optimized C# code.",
+    "rules": [
+      "ALWAYS use `async` and `await` for any I/O bound operation. NEVER use `.Result` or `.Wait()` which can cause deadlocks.",
+      "ALWAYS append `Async` to the name of asynchronous methods (e.g., `GetUserAsync`).",
+      "ALWAYS use `record` types for DTOs and immutable data models.",
+      "NEVER throw exceptions for expected business logic violations. Return a specific domain Result object.",
+      "ALWAYS use LINQ instead of standard `foreach` loops when filtering, projecting, or aggregating collections.",
+      "ALWAYS utilize C# pattern matching (switch expressions) instead of deeply nested `if-else` or legacy `switch` statements.",
+      "NEVER expose mutable collections (`List<T>`) as properties. ALWAYS expose `IReadOnlyCollection<T>` or `IEnumerable<T>`.",
+      "ALWAYS pass `CancellationToken` to all asynchronous methods and pass it down the call stack.",
+      "ALWAYS use primary constructors for simple dependency injection via class declarations.",
+      "ALWAYS enable nullable reference types (`<Nullable>enable</Nullable>`) and resolve all nullable warnings."
+    ],
+    "canonical_snippet": "using System.Threading;\nusing System.Threading.Tasks;\n\npublic record UserDto(string Id, string Email);\n\npublic interface IUserRepository\n{\n    Task<UserDto?> GetByIdAsync(string id, CancellationToken cancellationToken);\n}\n\npublic class UserService(IUserRepository repository)\n{\n    public async Task<UserDto?> GetActiveUserAsync(string id, CancellationToken cancellationToken = default)\n    {\n        var user = await repository.GetByIdAsync(id, cancellationToken);\n        return user switch\n        {\n            not null when user.Email.EndsWith(\"@enterprise.com\") => user,\n            _ => null\n        };\n    }\n}"
+  }
+}

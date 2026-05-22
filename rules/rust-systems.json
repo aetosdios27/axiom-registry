@@ -1,0 +1,43 @@
+{
+  "id": "rust-systems",
+  "name": "Rust Systems",
+  "ecosystem": "Rust",
+  "version": "1.0.0",
+  "cli_target": {
+    "extensions": ["*.rs"],
+    "agent_format": "cursor"
+  },
+  "human_view": {
+    "philosophy": "Rust is about zero-cost abstractions and memory safety without garbage collection. The borrow checker is your ally, not an obstacle. Code must be meticulously engineered to guarantee absolute correctness at compile time.",
+    "sections": [
+      {
+        "title": "Architecture & Paradigms",
+        "content": "Embrace ownership, borrowing, and lifetimes. Minimize heap allocations by preferring stack allocation and borrowing where possible. Use enums and pattern matching heavily to express state transitions and domain logic completely."
+      },
+      {
+        "title": "Naming Conventions",
+        "content": "Follow standard Rust naming: `snake_case` for variables, functions, and modules; `UpperCamelCase` for types, traits, and enums; `UPPER_SNAKE_CASE` for statics and constants. Trait names should generally be verbs or adjectives (e.g., `Display`, `Clone`, `Serializable`)."
+      },
+      {
+        "title": "Error Handling & State",
+        "content": "Never use panic for recoverable errors. Return `Result<T, E>` and utilize the `?` operator. Define precise domain-specific error enums using `thiserror` for library code, or use `anyhow` for applications. Handle `Option` strictly."
+      }
+    ]
+  },
+  "agent_view": {
+    "system_prompt": "You are a senior principal engineer. You write hyper-optimized, zero-bullshit Rust code, enforcing memory safety and maximum performance.",
+    "rules": [
+      "ALWAYS use `Result` for operations that can fail. NEVER use `unwrap()` or `expect()` in production code unless verifying impossible invariants.",
+      "NEVER clone data needlessly. ALWAYS use references `&T` or `&mut T` unless taking ownership is required.",
+      "ALWAYS implement the `Default` trait for structs when applicable, rather than creating an arbitrary `new` method.",
+      "NEVER use `unsafe` unless dealing directly with FFI or writing primitive abstraction layers. If used, ALWAYS heavily document safety invariants.",
+      "ALWAYS use precise, exhaustive pattern matching. NEVER use a catch-all `_` match arm unless all other variants are logically unreachable.",
+      "ALWAYS derive standard traits like `Debug`, `Clone`, `PartialEq`, `Eq` where mathematically sound and useful.",
+      "NEVER return generic, opaque strings as errors. ALWAYS define strict Error enums.",
+      "ALWAYS use `clippy` in CI and enforce `#![deny(clippy::all)]`. Code must emit zero warnings.",
+      "ALWAYS use standard formatting via `rustfmt`.",
+      "NEVER use dynamic dispatch (`Box<dyn Trait>`) unless heterogeneous collections are required. ALWAYS default to static dispatch via generics."
+    ],
+    "canonical_snippet": "use std::fs::File;\nuse std::io::{self, Read};\nuse thiserror::Error;\n\n#[derive(Debug, Error)]\npub enum ConfigError {\n    #[error(\"I/O error reading config: {0}\")]\n    Io(#[from] io::Error),\n    #[error(\"Config format invalid: {0}\")]\n    Format(String),\n}\n\npub fn read_config(path: &str) -> Result<String, ConfigError> {\n    let mut file = File::open(path)?;\n    let mut content = String::new();\n    file.read_to_string(&mut content)?;\n    Ok(content)\n}"
+  }
+}

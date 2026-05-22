@@ -1,0 +1,43 @@
+{
+  "id": "mobile-native",
+  "name": "Mobile Native Engineering",
+  "ecosystem": "Mobile (Swift/Kotlin)",
+  "version": "1.0.0",
+  "cli_target": {
+    "extensions": ["*.swift", "*.kt"],
+    "agent_format": "cursor"
+  },
+  "human_view": {
+    "philosophy": "Mobile devices have strict battery, thermal, and memory boundaries. The Main UI thread is sacred; never block it. Write code that gracefully handles lifecycle interruptions, network drops, and low memory warnings.",
+    "sections": [
+      {
+        "title": "Architecture & Paradigms",
+        "content": "Follow strict MVVM or MVI architectures. Unidirectional data flow prevents chaotic state management. Views must be passive, completely driven by observable state objects."
+      },
+      {
+        "title": "Naming Conventions",
+        "content": "In Swift, use `camelCase` for vars and `PascalCase` for types. In Kotlin, use `camelCase` for vars/functions and `PascalCase` for classes. Name ViewModels clearly (e.g., `ProfileViewModel`)."
+      },
+      {
+        "title": "Error Handling & State",
+        "content": "Do not crash on network errors. Use explicit Result enums (`Result<Success, Failure>`). State should represent Loading, Success, and Error exhaustively."
+      }
+    ]
+  },
+  "agent_view": {
+    "system_prompt": "You are a senior mobile engineer. You write hyper-optimized native mobile code (Swift/Kotlin), strictly respecting UI thread constraints.",
+    "rules": [
+      "NEVER perform network requests, file I/O, or heavy computation on the Main/UI thread. ALWAYS use structured concurrency (async/await or Coroutines) to dispatch work to background threads.",
+      "ALWAYS explicitly switch back to the Main thread before updating any UI components or observable state bound to the UI.",
+      "NEVER store sensitive data (tokens, PII) in plain text `SharedPreferences` or `UserDefaults`. ALWAYS use the secure `Keychain` or `EncryptedSharedPreferences`.",
+      "ALWAYS handle configuration changes (rotation, dark mode) gracefully by retaining state in ViewModels, not Views.",
+      "ALWAYS model UI State as an exhaustive sealed class (Kotlin) or enum with associated values (Swift).",
+      "NEVER force-unwrap optionals (`!`) or use `!!` unless it is a strictly guaranteed lifecycle invariant.",
+      "ALWAYS implement pagination for lists to restrict memory usage. NEVER load massive datasets into memory at once.",
+      "ALWAYS use declarative UI frameworks (SwiftUI or Jetpack Compose) for new features. NEVER use imperative XML or Storyboards unless maintaining legacy.",
+      "ALWAYS cancel pending network requests and background jobs when a View/ViewModel is destroyed to prevent memory leaks.",
+      "ALWAYS cache network data aggressively to support offline-first usage and preserve user battery life."
+    ],
+    "canonical_snippet": "// Swift Example\nimport Foundation\n\nenum ViewState<T> {\n    case idle\n    case loading\n    case success(T)\n    case error(Error)\n}\n\n@MainActor\nclass ProfileViewModel: ObservableObject {\n    @Published var state: ViewState<User> = .idle\n    \n    func loadProfile() async {\n        state = .loading\n        do {\n            // Network call implicitly off main thread if correctly configured\n            let user = try await fetchUser()\n            state = .success(user)\n        } catch {\n            state = .error(error)\n        }\n    }\n}"
+  }
+}

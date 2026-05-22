@@ -1,0 +1,43 @@
+{
+  "id": "nuxt-composition",
+  "name": "Nuxt Composition API",
+  "ecosystem": "Nuxt (Vue)",
+  "version": "1.0.0",
+  "cli_target": {
+    "extensions": ["*.vue", "*.ts"],
+    "agent_format": "cursor"
+  },
+  "human_view": {
+    "philosophy": "Nuxt 3 leverages the power of Vue's Composition API for absolute control over reactivity. Avoid Option API artifacts. Treat composables as pure, decoupled logic injected directly into setup.",
+    "sections": [
+      {
+        "title": "Architecture & Paradigms",
+        "content": "Use `<script setup>` exclusively. Treat state as modular constructs using `useState` or Pinia. Do not leak component logic into templates; templates should be incredibly dumb projections of computed state."
+      },
+      {
+        "title": "Naming Conventions",
+        "content": "Composables must be camelCase and prefixed with `use`, e.g., `useAuth()`. Component names should be multi-word PascalCase (`UserProfile.vue`). Props and events must use camelCase inside scripts and kebab-case in templates."
+      },
+      {
+        "title": "Error Handling & State",
+        "content": "Use `useAsyncData` or `useFetch` for network requests; never use raw `fetch` to avoid hydration mismatches. Expose errors through the destructured `error` ref."
+      }
+    ]
+  },
+  "agent_view": {
+    "system_prompt": "You are a senior principal engineer. You write hyper-optimized Nuxt 3 code strictly using `<script setup>` and Composition API patterns.",
+    "rules": [
+      "ALWAYS use `<script setup lang=\"ts\">`. NEVER use the Options API.",
+      "NEVER use raw `fetch` or `axios` for SSR data. ALWAYS use `useFetch` or `useAsyncData` to ensure hydration state matching.",
+      "ALWAYS extract complex state and logic into auto-imported composables (`composables/`).",
+      "NEVER mutate props directly. ALWAYS emit events or provide an update function if two-way binding is required.",
+      "ALWAYS strictly type props using `defineProps<{ ... }>()`.",
+      "NEVER use `v-if` and `v-for` on the same element.",
+      "ALWAYS define emitted events using `defineEmits<{ ... }>()`.",
+      "ALWAYS use `computed` for derived state. NEVER compute derived state directly within the template.",
+      "ALWAYS scope component styles using `<style scoped>` unless defining global utility classes.",
+      "NEVER import Nuxt-provided auto-imports (like `ref`, `computed`, `useRoute`) manually. Let the auto-importer handle it."
+    ],
+    "canonical_snippet": "<script setup lang=\"ts\">\nconst props = defineProps<{\n  userId: string;\n}>();\n\nconst { data: user, pending, error } = await useFetch(`/api/users/${props.userId}`);\n\nconst displayName = computed(() => \n  user.value ? `${user.value.firstName} ${user.value.lastName}` : 'Guest'\n);\n</script>\n\n<template>\n  <div v-if=\"pending\">Loading...</div>\n  <div v-else-if=\"error\">Failed to load user</div>\n  <div v-else>\n    <h1>{{ displayName }}</h1>\n  </div>\n</template>"
+  }
+}

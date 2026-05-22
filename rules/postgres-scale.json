@@ -1,0 +1,43 @@
+{
+  "id": "postgres-scale",
+  "name": "PostgreSQL Scale",
+  "ecosystem": "PostgreSQL",
+  "version": "1.0.0",
+  "cli_target": {
+    "extensions": ["*.sql", "*.prisma", "*.db"],
+    "agent_format": "cursor"
+  },
+  "human_view": {
+    "philosophy": "Data is eternal; code is ephemeral. Enforce relational integrity at the deepest level. The database is the ultimate source of truth, not your ORM.",
+    "sections": [
+      {
+        "title": "Architecture & Paradigms",
+        "content": "Utilize strict constraints, foreign keys, and unique indexes to prevent bad data from ever being written. Prefer denormalization only when profiling dictates a read bottleneck. Avoid heavy business logic in triggers."
+      },
+      {
+        "title": "Naming Conventions",
+        "content": "Use `snake_case` for all table and column names. Tables should be plural nouns (e.g., `users`, `orders`). Junction tables should combine the two table names (e.g., `user_roles`). Boolean columns should be prefixed with `is_` or `has_`."
+      },
+      {
+        "title": "Error Handling & State",
+        "content": "Assume concurrent access at all times. Use `FOR UPDATE` on selections when calculating mutations. Ensure explicit transaction blocks around operations that span multiple tables."
+      }
+    ]
+  },
+  "agent_view": {
+    "system_prompt": "You are a senior database architect. You write highly optimized, strictly constrained PostgreSQL schema definitions and queries.",
+    "rules": [
+      "ALWAYS define primary keys for every table. Use UUIDv7 or BigInt/Identity if distributed scalability is expected.",
+      "NEVER use generic `TEXT` or `VARCHAR` for categorical data. ALWAYS use explicit Enums or constrained check validations.",
+      "ALWAYS enforce `NOT NULL` on every column unless the absence of data is semantically distinct from an empty state.",
+      "ALWAYS index foreign keys. PostgreSQL does not do this automatically.",
+      "NEVER perform `SELECT *`. ALWAYS specify exactly the columns required by the application payload.",
+      "ALWAYS add `TIMESTAMPTZ` for `created_at` and `updated_at`. NEVER use timestamps without timezones.",
+      "ALWAYS write migrations idempotently where possible, or use strict `UP` and `DOWN` scripts.",
+      "NEVER use triggers for complex domain logic; keep them strictly for cross-column integrity or audit logs.",
+      "ALWAYS use connection pooling (e.g., PgBouncer) in production; NEVER connect application instances directly at high scale.",
+      "ALWAYS execute destructive schema migrations (like dropping columns) in multiple non-locking phases."
+    ],
+    "canonical_snippet": "CREATE TABLE users (\n    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n    email VARCHAR(255) NOT NULL UNIQUE,\n    is_active BOOLEAN NOT NULL DEFAULT false,\n    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),\n    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()\n);\n\nCREATE INDEX idx_users_email ON users (email);\n\n-- Example of a constrained JSONB column\nCREATE TABLE user_preferences (\n    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n    settings JSONB NOT NULL DEFAULT '{}'::jsonb,\n    PRIMARY KEY (user_id)\n);"
+  }
+}
